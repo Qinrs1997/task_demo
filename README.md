@@ -64,7 +64,36 @@ scripts\start.bat
 - 检查 `conda`
 - 创建 `task_demo` 虚拟环境
 - 安装 `requirements.txt`
+- 从 `config/startup.env` 读取启动配置
+- 如果端口被占用，按配置自动结束占用进程
+- 从 `.env` 读取应用配置和 API Key
 - 启动 FastAPI 服务
+
+快速交互式配置：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\quick_setup.ps1
+```
+
+这个脚本会引导你配置 Conda 环境名、Python 版本、端口、API Key，并检测环境和依赖。
+
+一键使用默认值检测，不启动服务：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\quick_setup.ps1 -AcceptDefaults -NoStart
+```
+
+启动配置文件：
+
+```text
+config/startup.env
+```
+
+应用配置文件：
+
+```text
+.env
+```
 
 如果本机 Conda 镜像不可用，可以临时指定 channel：
 
@@ -90,13 +119,13 @@ Swagger 文档:   http://127.0.0.1:8000/docs
 健康检查:       http://127.0.0.1:8000/health
 ```
 
-常用启动配置：
+常用启动配置写在 `config/startup.env`：
 
-```bash
-set APP_PORT=8001              # 修改端口
-set APP_RELOAD=false           # 关闭热重载
-set CONDA_ENV_NAME=task_demo   # 修改 Conda 环境名
-scripts\start.bat
+```text
+APP_PORT=8001
+APP_RELOAD=false
+CONDA_ENV_NAME=task_demo
+KILL_PORT_ON_START=true
 ```
 
 ### API Key
@@ -192,7 +221,36 @@ The startup script will:
 - check `conda`
 - create the `task_demo` virtual environment
 - install `requirements.txt`
+- read startup options from `config/startup.env`
+- kill the process occupying the configured port when enabled
+- read app settings and API Key from `.env`
 - start the FastAPI server
+
+Interactive quick setup:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\quick_setup.ps1
+```
+
+The script helps configure the Conda environment name, Python version, port, API Key, environment, and dependencies.
+
+Run with defaults without starting the server:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\quick_setup.ps1 -AcceptDefaults -NoStart
+```
+
+Startup config:
+
+```text
+config/startup.env
+```
+
+Application config:
+
+```text
+.env
+```
 
 If your local Conda mirror is unavailable, specify a channel:
 
@@ -218,13 +276,13 @@ Swagger docs: http://127.0.0.1:8000/docs
 Health check: http://127.0.0.1:8000/health
 ```
 
-Common startup options:
+Common startup options live in `config/startup.env`:
 
-```bash
-set APP_PORT=8001              # change port
-set APP_RELOAD=false           # disable reload
-set CONDA_ENV_NAME=task_demo   # change Conda env name
-scripts\start.bat
+```text
+APP_PORT=8001
+APP_RELOAD=false
+CONDA_ENV_NAME=task_demo
+KILL_PORT_ON_START=true
 ```
 
 ### API Key

@@ -3,22 +3,44 @@ setlocal
 
 cd /d "%~dp0\.."
 
-if "%APP_HOST%"=="" set "APP_HOST=127.0.0.1"
-if "%APP_PORT%"=="" set "APP_PORT=8000"
-if "%APP_RELOAD%"=="" set "APP_RELOAD=true"
-if "%CONDA_ENV_NAME%"=="" set "CONDA_ENV_NAME=task_demo"
-if "%PYTHON_VERSION%"=="" set "PYTHON_VERSION=3.10"
-if "%CONDA_CHANNEL_ARGS%"=="" set "CONDA_CHANNEL_ARGS=--override-channels -c https://repo.anaconda.com/pkgs/main"
+set "STARTUP_CONFIG=config\startup.env"
+if not exist "%STARTUP_CONFIG%" (
+    echo [ERROR] Missing startup config: %STARTUP_CONFIG%
+    exit /b 1
+)
+
+for /f "usebackq eol=# tokens=1,* delims==" %%A in ("%STARTUP_CONFIG%") do (
+    if not "%%A"=="" if not defined %%A set "%%A=%%B"
+)
+
+if "%APP_HOST%"=="" goto missing_config
+if "%APP_PORT%"=="" goto missing_config
+if "%APP_RELOAD%"=="" goto missing_config
+if "%KILL_PORT_ON_START%"=="" goto missing_config
+if "%CONDA_ENV_NAME%"=="" goto missing_config
+if "%PYTHON_VERSION%"=="" goto missing_config
+if "%CONDA_CHANNEL_ARGS%"=="" goto missing_config
+if "%UVICORN_ENV_FILE%"=="" goto missing_config
+
+if not exist "%UVICORN_ENV_FILE%" (
+    if exist ".env.example" (
+        echo [INFO] Creating %UVICORN_ENV_FILE% from .env.example
+        copy ".env.example" "%UVICORN_ENV_FILE%" >nul
+    )
+)
 
 echo.
 echo ========================================
 echo   Task Management API
 echo ========================================
+echo   Config:    %STARTUP_CONFIG%
+echo   App env:   %UVICORN_ENV_FILE%
 echo   Conda env: %CONDA_ENV_NAME%
 echo   Python:    %PYTHON_VERSION%
 echo   Host:      %APP_HOST%
 echo   Port:      %APP_PORT%
 echo   Reload:    %APP_RELOAD%
+echo   Kill port: %KILL_PORT_ON_START%
 echo ========================================
 
 where conda >nul 2>&1
@@ -34,9 +56,6 @@ if errorlevel 1 (
     call conda create -y -n "%CONDA_ENV_NAME%" python=%PYTHON_VERSION% %CONDA_CHANNEL_ARGS%
     if errorlevel 1 (
         echo [ERROR] Failed to create conda environment.
-        echo [TIP] If your conda mirror is unavailable, try:
-        echo       set CONDA_CHANNEL_ARGS=--override-channels -c https://repo.anaconda.com/pkgs/main
-        echo       scripts\start.bat
         exit /b 1
     )
 )
@@ -51,12 +70,11 @@ if errorlevel 1 (
     )
 )
 
-netstat -ano | findstr ":%APP_PORT% " | findstr "LISTENING" >nul 2>&1
-if not errorlevel 1 (
-    echo [WARN] Port %APP_PORT% is already in use.
-    echo Change the port with: set APP_PORT=8001
-    exit /b 1
-)
+call :free_port
+if errorlevel 1 exit /b 1
+
+set "UVICORN_ENV_ARGS="
+if exist "%UVICORN_ENV_FILE%" set "UVICORN_ENV_ARGS=--env-file %UVICORN_ENV_FILE%"
 
 echo [OK] Starting server
 echo   API:  http://%APP_HOST%:%APP_PORT%/api/v1/tasks
@@ -65,9 +83,40 @@ echo   Docs: http://%APP_HOST%:%APP_PORT%/docs
 echo.
 
 if /I "%APP_RELOAD%"=="true" (
-    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT% --reload
+    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT% --reload %UVICORN_ENV_ARGS%
 ) else (
-    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT%
+    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT% %UVICORN_ENV_ARGS%
 )
 
 endlocal
+exit /b %ERRORLEVEL%
+
+:missing_config
+echo [ERROR] Missing required startup config.
+echo Please edit %STARTUP_CONFIG%
+exit /b 1
+
+:free_port
+set "PORT_IN_USE="
+for /f "tokens=5" %%P in ('netstat -ano ^| findstr ":%APP_PORT% " ^| findstr "LISTENING"') do (
+    if not "%%P"=="0" (
+        set "PORT_IN_USE=1"
+        if /I "%KILL_PORT_ON_START%"=="true" (
+            echo [WARN] Port %APP_PORT% is in use. Killing PID %%P...
+            taskkill /F /T /PID %%P >nul 2>&1
+        ) else (
+            echo [ERROR] Port %APP_PORT% is already in use by PID %%P.
+            echo Set KILL_PORT_ON_START=true in %STARTUP_CONFIG% or change APP_PORT.
+            exit /b 1
+        )
+    )
+)
+if defined PORT_IN_USE (
+    timeout /t 2 /nobreak >nul
+    netstat -ano | findstr ":%APP_PORT% " | findstr "LISTENING" >nul 2>&1
+    if not errorlevel 1 (
+        echo [ERROR] Port %APP_PORT% is still in use after cleanup.
+        exit /b 1
+    )
+)
+exit /b 0
