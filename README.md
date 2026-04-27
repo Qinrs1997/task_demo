@@ -172,7 +172,7 @@ logs/error.log
 任务完成后的模拟邮件日志会写入 `logs/app.log`，例如：
 
 ```text
-Email sent for task 1
+Email sent for task 1 | title=Prepare FastAPI interview | description=Build a compact task management API | due_date=2026-04-28T08:00:00+00:00 | completed_at=2026-04-27T08:00:00+00:00
 ```
 
 如果你想在启动窗口显示每个 HTTP 请求，把 `config/startup.env` 改成：
@@ -372,7 +372,7 @@ logs/error.log
 The mock email notification log is written to `logs/app.log`, for example:
 
 ```text
-Email sent for task 1
+Email sent for task 1 | title=Prepare FastAPI interview | description=Build a compact task management API | due_date=2026-04-28T08:00:00+00:00 | completed_at=2026-04-27T08:00:00+00:00
 ```
 
 To show every HTTP request in the startup console, set this in `config/startup.env`:

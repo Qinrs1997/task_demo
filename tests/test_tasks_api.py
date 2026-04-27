@@ -65,6 +65,10 @@ async def test_update_task_triggers_async_notification(client, future_due_date: 
     assert response.status_code == 200
     assert response.json()["data"]["status"] == "completed"
     assert f"Email sent for task {task_id}" in caplog.text
+    assert "title=Prepare FastAPI interview" in caplog.text
+    assert "description=Build a compact task management API" in caplog.text
+    assert "due_date=" in caplog.text
+    assert "completed_at=" in caplog.text
 
 
 @pytest.mark.asyncio

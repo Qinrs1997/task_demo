@@ -79,6 +79,9 @@ async def update_task(
         background_tasks.add_task(
             NotificationService().send_task_completed_email,
             updated_task.id,
+            updated_task.title,
+            updated_task.description,
+            updated_task.due_date,
         )
 
     return Response(message="更新成功", data=updated_task)
