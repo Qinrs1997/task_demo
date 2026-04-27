@@ -2,7 +2,7 @@
 
 ## 中文说明
 
-这是一个用于 Python 后端面试题的精简 FastAPI 项目，实现了一个任务管理系统 API。项目结构刻意贴近 `base-apivue/backend` 的分层习惯，方便对照学习：`api/v1/endpoints` 写接口，`crud` 写数据库操作，`models` 写 SQLAlchemy 模型，`schemas` 写 Pydantic 入参出参，`core/database.py` 负责数据库连接。
+这是一个精简的 Python FastAPI 后端示例项目，实现了一个任务管理系统 API。项目结构采用常见的分层习惯，方便对照学习：`api/v1/endpoints` 写接口，`crud` 写数据库操作，`models` 写 SQLAlchemy 模型，`schemas` 写 Pydantic 入参出参，`core/database.py` 负责数据库连接。
 
 ### 功能特性
 
@@ -52,14 +52,17 @@ tests/
   test_tasks_api.py
 ```
 
-### Conda 启动
+### 快速开始
+
+从 GitHub 获取代码：
 
 ```bash
-cd C:\Users\Administrator\Desktop\project\面试\task-management-api
+git clone https://github.com/Qinrs1997/task_demo.git
+cd task_demo
 scripts\start.bat
 ```
 
-启动脚本会自动完成：
+`scripts\start.bat` 会自动下载并配置运行环境：
 
 - 检查 `conda`
 - 创建 `task_demo` 虚拟环境
@@ -69,13 +72,27 @@ scripts\start.bat
 - 从 `.env` 读取应用配置和 API Key
 - 启动 FastAPI 服务
 
-快速交互式配置：
+### Conda 环境快速配置
+
+如果电脑还没有安装 Conda，先安装 Miniconda：
+
+- Windows 安装说明：https://docs.conda.io/projects/conda/en/stable/user-guide/install/windows.html
+- Miniconda 下载说明：https://www.anaconda.com/docs/getting-started/miniconda/install
+
+推荐直接运行快速配置脚本：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\quick_setup.ps1
 ```
 
-这个脚本会引导你配置 Conda 环境名、Python 版本、端口、API Key，并检测环境和依赖。
+它会引导你配置：
+
+- Conda 环境名
+- Python 版本
+- 服务端口
+- API Key
+- 日志文件位置
+- 是否自动结束占用端口的进程
 
 一键使用默认值检测，不启动服务：
 
@@ -172,7 +189,7 @@ logs/error.log
 任务完成后的模拟邮件日志会写入 `logs/app.log`，例如：
 
 ```text
-Email sent for task 1 | title=Prepare FastAPI interview | description=Build a compact task management API | due_date=2026-04-28T08:00:00+00:00 | completed_at=2026-04-27T08:00:00+00:00
+Email sent for task 1 | title=Prepare FastAPI demo | description=Build a compact task management API | due_date=2026-04-28T08:00:00+00:00 | completed_at=2026-04-27T08:00:00+00:00
 ```
 
 如果你想在启动窗口显示每个 HTTP 请求，把 `config/startup.env` 改成：
@@ -202,7 +219,7 @@ pytest --cov=app --cov-report=term-missing
 
 ## English Version
 
-This is a compact FastAPI project for a Python backend interview task. It implements a task management REST API and follows a layered structure similar to `base-apivue/backend`: `api/v1/endpoints` for routes, `crud` for database operations, `models` for SQLAlchemy models, `schemas` for Pydantic request/response schemas, and `core/database.py` for database setup.
+This is a compact Python FastAPI backend demo. It implements a task management REST API and follows a common layered structure: `api/v1/endpoints` for routes, `crud` for database operations, `models` for SQLAlchemy models, `schemas` for Pydantic request/response schemas, and `core/database.py` for database setup.
 
 ### Features
 
@@ -252,14 +269,17 @@ tests/
   test_tasks_api.py
 ```
 
-### Run Locally
+### Quick Start
+
+Clone the project:
 
 ```bash
-cd C:\Users\Administrator\Desktop\project\面试\task-management-api
+git clone https://github.com/Qinrs1997/task_demo.git
+cd task_demo
 scripts\start.bat
 ```
 
-The startup script will:
+`scripts\start.bat` will download and configure the runtime environment:
 
 - check `conda`
 - create the `task_demo` virtual environment
@@ -269,13 +289,27 @@ The startup script will:
 - read app settings and API Key from `.env`
 - start the FastAPI server
 
-Interactive quick setup:
+### Conda Environment Quick Setup
+
+If Conda is not installed yet, install Miniconda first:
+
+- Windows install guide: https://docs.conda.io/projects/conda/en/stable/user-guide/install/windows.html
+- Miniconda download guide: https://www.anaconda.com/docs/getting-started/miniconda/install
+
+Recommended setup command:
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\quick_setup.ps1
 ```
 
-The script helps configure the Conda environment name, Python version, port, API Key, environment, and dependencies.
+It guides you through:
+
+- Conda environment name
+- Python version
+- service port
+- API Key
+- log file paths
+- whether to kill the process occupying the configured port
 
 Run with defaults without starting the server:
 
@@ -372,7 +406,7 @@ logs/error.log
 The mock email notification log is written to `logs/app.log`, for example:
 
 ```text
-Email sent for task 1 | title=Prepare FastAPI interview | description=Build a compact task management API | due_date=2026-04-28T08:00:00+00:00 | completed_at=2026-04-27T08:00:00+00:00
+Email sent for task 1 | title=Prepare FastAPI demo | description=Build a compact task management API | due_date=2026-04-28T08:00:00+00:00 | completed_at=2026-04-27T08:00:00+00:00
 ```
 
 To show every HTTP request in the startup console, set this in `config/startup.env`:
