@@ -156,7 +156,11 @@ $hostName = Prompt-Value "Host" (Get-ValueOrDefault $startup "APP_HOST" "127.0.0
 $portText = Prompt-Value "Port" (Get-ValueOrDefault $startup "APP_PORT" "8000")
 $reload = Prompt-Value "Reload true/false" (Get-ValueOrDefault $startup "APP_RELOAD" "true")
 $killPort = Prompt-Value "Kill occupied port true/false" (Get-ValueOrDefault $startup "KILL_PORT_ON_START" "true")
+$accessLog = Prompt-Value "Uvicorn access log true/false" (Get-ValueOrDefault $startup "UVICORN_ACCESS_LOG" "false")
 $apiKey = Prompt-Value "API key" (Get-ValueOrDefault $appEnv "API_KEY" "dev-secret")
+$logFile = Prompt-Value "App log file" (Get-ValueOrDefault $appEnv "LOG_FILE" "logs/app.log")
+$errorLogFile = Prompt-Value "Error log file" (Get-ValueOrDefault $appEnv "ERROR_LOG_FILE" "logs/error.log")
+$logToConsole = Prompt-Value "Also log to console true/false" (Get-ValueOrDefault $appEnv "LOG_TO_CONSOLE" "false")
 $channelArgs = Prompt-Value "Conda channel args" (Get-ValueOrDefault $startup "CONDA_CHANNEL_ARGS" "--override-channels -c https://repo.anaconda.com/pkgs/main")
 
 $port = 0
@@ -169,6 +173,7 @@ $startupValues = [ordered]@{
     APP_PORT = "$port"
     APP_RELOAD = $reload
     KILL_PORT_ON_START = $killPort
+    UVICORN_ACCESS_LOG = $accessLog
     CONDA_ENV_NAME = $condaEnvName
     PYTHON_VERSION = $pythonVersion
     CONDA_CHANNEL_ARGS = $channelArgs
@@ -180,6 +185,9 @@ $appValues = [ordered]@{
     DATABASE_URL = Get-ValueOrDefault $appEnv "DATABASE_URL" "sqlite+aiosqlite:///./tasks.db"
     API_KEY = $apiKey
     LOG_LEVEL = Get-ValueOrDefault $appEnv "LOG_LEVEL" "INFO"
+    LOG_FILE = $logFile
+    ERROR_LOG_FILE = $errorLogFile
+    LOG_TO_CONSOLE = $logToConsole
 }
 
 Write-EnvFile $StartupConfigPath $startupValues @(
@@ -187,12 +195,21 @@ Write-EnvFile $StartupConfigPath $startupValues @(
     "APP_PORT",
     "APP_RELOAD",
     "KILL_PORT_ON_START",
+    "UVICORN_ACCESS_LOG",
     "CONDA_ENV_NAME",
     "PYTHON_VERSION",
     "CONDA_CHANNEL_ARGS",
     "UVICORN_ENV_FILE"
 )
-Write-EnvFile $AppEnvPath $appValues @("APP_NAME", "DATABASE_URL", "API_KEY", "LOG_LEVEL")
+Write-EnvFile $AppEnvPath $appValues @(
+    "APP_NAME",
+    "DATABASE_URL",
+    "API_KEY",
+    "LOG_LEVEL",
+    "LOG_FILE",
+    "ERROR_LOG_FILE",
+    "LOG_TO_CONSOLE"
+)
 
 Write-Host "[OK] Wrote $StartupConfigPath"
 Write-Host "[OK] Wrote $AppEnvPath"

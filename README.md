@@ -95,6 +95,22 @@ config/startup.env
 .env
 ```
 
+日志配置也在 `.env`：
+
+```text
+LOG_LEVEL=INFO
+LOG_FILE=logs/app.log
+ERROR_LOG_FILE=logs/error.log
+LOG_TO_CONSOLE=false
+```
+
+查看日志：
+
+```powershell
+Get-Content .\logs\app.log -Tail 50
+Get-Content .\logs\app.log -Wait
+```
+
 如果本机 Conda 镜像不可用，可以临时指定 channel：
 
 ```bash
@@ -126,6 +142,7 @@ APP_PORT=8001
 APP_RELOAD=false
 CONDA_ENV_NAME=task_demo
 KILL_PORT_ON_START=true
+UVICORN_ACCESS_LOG=false
 ```
 
 ### API Key
@@ -137,6 +154,32 @@ X-API-Key: dev-secret
 ```
 
 API Key 可以理解为一个简单的接口访问密码。真实生产项目通常会使用登录、JWT、OAuth2 或权限系统。
+
+### 日志
+
+业务日志默认写入：
+
+```text
+logs/app.log
+```
+
+错误日志默认写入：
+
+```text
+logs/error.log
+```
+
+任务完成后的模拟邮件日志会写入 `logs/app.log`，例如：
+
+```text
+Email sent for task 1
+```
+
+如果你想在启动窗口显示每个 HTTP 请求，把 `config/startup.env` 改成：
+
+```text
+UVICORN_ACCESS_LOG=true
+```
 
 ### 接口列表
 
@@ -252,6 +295,22 @@ Application config:
 .env
 ```
 
+Logging config also lives in `.env`:
+
+```text
+LOG_LEVEL=INFO
+LOG_FILE=logs/app.log
+ERROR_LOG_FILE=logs/error.log
+LOG_TO_CONSOLE=false
+```
+
+View logs:
+
+```powershell
+Get-Content .\logs\app.log -Tail 50
+Get-Content .\logs\app.log -Wait
+```
+
 If your local Conda mirror is unavailable, specify a channel:
 
 ```bash
@@ -283,6 +342,7 @@ APP_PORT=8001
 APP_RELOAD=false
 CONDA_ENV_NAME=task_demo
 KILL_PORT_ON_START=true
+UVICORN_ACCESS_LOG=false
 ```
 
 ### API Key
@@ -294,6 +354,32 @@ X-API-Key: dev-secret
 ```
 
 The API Key is a simple access password for this demo. In production systems, authentication is usually handled with login sessions, JWT, OAuth2, or a full permission system.
+
+### Logging
+
+Application logs are written to:
+
+```text
+logs/app.log
+```
+
+Error logs are written to:
+
+```text
+logs/error.log
+```
+
+The mock email notification log is written to `logs/app.log`, for example:
+
+```text
+Email sent for task 1
+```
+
+To show every HTTP request in the startup console, set this in `config/startup.env`:
+
+```text
+UVICORN_ACCESS_LOG=true
+```
 
 ### API Endpoints
 

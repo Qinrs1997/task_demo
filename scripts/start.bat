@@ -17,6 +17,7 @@ if "%APP_HOST%"=="" goto missing_config
 if "%APP_PORT%"=="" goto missing_config
 if "%APP_RELOAD%"=="" goto missing_config
 if "%KILL_PORT_ON_START%"=="" goto missing_config
+if "%UVICORN_ACCESS_LOG%"=="" goto missing_config
 if "%CONDA_ENV_NAME%"=="" goto missing_config
 if "%PYTHON_VERSION%"=="" goto missing_config
 if "%CONDA_CHANNEL_ARGS%"=="" goto missing_config
@@ -41,6 +42,7 @@ echo   Host:      %APP_HOST%
 echo   Port:      %APP_PORT%
 echo   Reload:    %APP_RELOAD%
 echo   Kill port: %KILL_PORT_ON_START%
+echo   Access log:%UVICORN_ACCESS_LOG%
 echo ========================================
 
 where conda >nul 2>&1
@@ -75,6 +77,8 @@ if errorlevel 1 exit /b 1
 
 set "UVICORN_ENV_ARGS="
 if exist "%UVICORN_ENV_FILE%" set "UVICORN_ENV_ARGS=--env-file %UVICORN_ENV_FILE%"
+set "UVICORN_ACCESS_LOG_ARGS="
+if /I "%UVICORN_ACCESS_LOG%"=="false" set "UVICORN_ACCESS_LOG_ARGS=--no-access-log"
 
 echo [OK] Starting server
 echo   API:  http://%APP_HOST%:%APP_PORT%/api/v1/tasks
@@ -83,9 +87,9 @@ echo   Docs: http://%APP_HOST%:%APP_PORT%/docs
 echo.
 
 if /I "%APP_RELOAD%"=="true" (
-    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT% --reload %UVICORN_ENV_ARGS%
+    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT% --reload %UVICORN_ENV_ARGS% %UVICORN_ACCESS_LOG_ARGS%
 ) else (
-    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT% %UVICORN_ENV_ARGS%
+    call conda run -n "%CONDA_ENV_NAME%" python -m uvicorn app.main:app --host %APP_HOST% --port %APP_PORT% %UVICORN_ENV_ARGS% %UVICORN_ACCESS_LOG_ARGS%
 )
 
 endlocal

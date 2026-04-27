@@ -15,7 +15,12 @@ from app.core.database import close_db, configure_database, init_db
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     settings = get_settings()
-    configure_logging(settings.LOG_LEVEL)
+    configure_logging(
+        level=settings.LOG_LEVEL,
+        log_file=settings.LOG_FILE,
+        error_log_file=settings.ERROR_LOG_FILE,
+        log_to_console=settings.LOG_TO_CONSOLE,
+    )
     configure_database(settings.DATABASE_URL)
     await init_db()
     yield

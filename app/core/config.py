@@ -25,6 +25,11 @@ class Settings:
     )
     API_KEY: str = field(default_factory=lambda: os.getenv("API_KEY", "dev-secret"))
     LOG_LEVEL: str = field(default_factory=lambda: os.getenv("LOG_LEVEL", "INFO"))
+    LOG_FILE: str = field(default_factory=lambda: os.getenv("LOG_FILE", "logs/app.log"))
+    ERROR_LOG_FILE: str = field(
+        default_factory=lambda: os.getenv("ERROR_LOG_FILE", "logs/error.log")
+    )
+    LOG_TO_CONSOLE: bool = field(default_factory=lambda: _get_bool("LOG_TO_CONSOLE", False))
     TESTING: bool = field(default_factory=lambda: _get_bool("TESTING", False))
 
 
