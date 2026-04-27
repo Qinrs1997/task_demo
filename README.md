@@ -52,20 +52,34 @@ tests/
   test_tasks_api.py
 ```
 
-### 本地启动
+### Conda 启动
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-python -m uvicorn app.main:app --reload
+cd C:\Users\Administrator\Desktop\project\面试\task-management-api
+scripts\start.bat
 ```
 
-Windows 可以直接运行：
+启动脚本会自动完成：
+
+- 检查 `conda`
+- 创建 `task_demo` 虚拟环境
+- 安装 `requirements.txt`
+- 启动 FastAPI 服务
+
+如果本机 Conda 镜像不可用，可以临时指定 channel：
 
 ```bash
+set CONDA_CHANNEL_ARGS=--override-channels -c https://repo.anaconda.com/pkgs/main
 scripts\start.bat
+```
+
+也可以手动执行：
+
+```bash
+conda create -n task_demo python=3.10 -y
+conda activate task_demo
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload
 ```
 
 启动后访问：
@@ -74,6 +88,15 @@ scripts\start.bat
 HTML 测试页面: http://127.0.0.1:8000/ui/
 Swagger 文档:   http://127.0.0.1:8000/docs
 健康检查:       http://127.0.0.1:8000/health
+```
+
+常用启动配置：
+
+```bash
+set APP_PORT=8001              # 修改端口
+set APP_RELOAD=false           # 关闭热重载
+set CONDA_ENV_NAME=task_demo   # 修改 Conda 环境名
+scripts\start.bat
 ```
 
 ### API Key
@@ -160,17 +183,31 @@ tests/
 ### Run Locally
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-copy .env.example .env
-python -m uvicorn app.main:app --reload
+cd C:\Users\Administrator\Desktop\project\面试\task-management-api
+scripts\start.bat
 ```
 
-On Windows, you can also run:
+The startup script will:
+
+- check `conda`
+- create the `task_demo` virtual environment
+- install `requirements.txt`
+- start the FastAPI server
+
+If your local Conda mirror is unavailable, specify a channel:
 
 ```bash
+set CONDA_CHANNEL_ARGS=--override-channels -c https://repo.anaconda.com/pkgs/main
 scripts\start.bat
+```
+
+Manual setup:
+
+```bash
+conda create -n task_demo python=3.10 -y
+conda activate task_demo
+pip install -r requirements.txt
+python -m uvicorn app.main:app --reload
 ```
 
 Open these URLs after startup:
@@ -179,6 +216,15 @@ Open these URLs after startup:
 HTML test UI: http://127.0.0.1:8000/ui/
 Swagger docs: http://127.0.0.1:8000/docs
 Health check: http://127.0.0.1:8000/health
+```
+
+Common startup options:
+
+```bash
+set APP_PORT=8001              # change port
+set APP_RELOAD=false           # disable reload
+set CONDA_ENV_NAME=task_demo   # change Conda env name
+scripts\start.bat
 ```
 
 ### API Key
